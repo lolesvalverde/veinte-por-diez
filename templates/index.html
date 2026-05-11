@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Padel Master</title>
+    <title>Veinte Por Diez</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -35,8 +35,10 @@
 <body>
     <h1>¡Bienvenid@s al veinte por diez!</h1>
     <div class="container">
-        <a href="/nuevo" class="btn btn-blue">Nuevo Torneo</a>
-        <a href="/mis-torneos" class="btn btn-green">Mis Torneos</a>
+        {% if show_new_tournament_button %}
+            <a href="/new" class="btn btn-blue">Nuevo Torneo</a>
+        {% endif %}
+        <a href="/my-tournaments" class="btn btn-green">Mis Torneos</a>
     </div>
 </body>
 </html>

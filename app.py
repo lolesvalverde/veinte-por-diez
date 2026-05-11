@@ -20,7 +20,7 @@ class Flags:
 flags = Flags()
 
 # Register the app container with CloudBees
-Rox.register('VeintePorDiez', flags)
+Rox.register(flags)
 
 # Retrieve the SDK key from environment variables
 sdk_key = os.getenv("ROX_SDK_KEY")
@@ -36,7 +36,10 @@ else:
 @app.route('/')
 def home():
     """Renders the main landing page."""
-    return render_template('index.html')
+    return render_template(
+        'index.html', 
+        show_new_tournament_button=flags.show_new_tournament_button.is_enabled()
+        )
 
 @app.route('/new')
 def new():
@@ -44,7 +47,7 @@ def new():
     return render_template('construction.html', title="New Tournament")
 
 @app.route('/my-tournaments')
-def mis_torneos():
+def my_tournaments():
     """Placeholder route for viewing saved tournaments."""
     return render_template('construction.html', title="My Tournaments")
 
