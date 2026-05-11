@@ -1,12 +1,15 @@
-# Interfaz de la Web App
+# UI
 flask
+flask_sqlalchemy
 
-# Framework de pruebas (para Smart Tests en CloudBees)
+# Database
+
+# Testing Framework
 pytest
 
-# SDK de CloudBees para Feature Flags
+# SDK by CloudBees for Feature Flags
 rox
 
-# Utilidades opcionales
+# Other
 pandas
 python-dotenv

@@ -1,12 +1,14 @@
-# Entornos virtuales
+# Virtual Environments
 .env
 venv/
 env/
 __pycache__/
 *.py[cod]
 
-# Archivos de datos locales
-tournaments.json
+# local
+instance/
+static/uploads/
+*.db
 
 # Streamlit
 .streamlit/

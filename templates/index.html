@@ -3,42 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <title>Veinte Por Diez</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/variables.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <style>
         body {
-            font-family: Arial, sans-serif;
             text-align: center;
-            background-color: #f4f7f6;
             padding-top: 100px;
         }
-        h1 { color: #1a5276; }
-        .container {
+        .button-container {
             display: flex;
             justify-content: center;
             gap: 20px;
             margin-top: 30px;
         }
-        .btn {
-            padding: 15px 35px;
-            font-size: 18px;
-            cursor: pointer;
-            border: none;
-            border-radius: 25px; /* Bordes redondeados */
-            text-decoration: none;
-            color: white;
-            transition: 0.3s;
-        }
-        .btn-blue { background-color: #2980b9; }
-        .btn-green { background-color: #27ae60; }
-        .btn:hover { opacity: 0.8; transform: translateY(-2px); }
     </style>
 </head>
 <body>
     <h1>¡Bienvenid@s al veinte por diez!</h1>
-    <div class="container">
+    <div class="button-container">
         {% if show_new_tournament_button %}
-            <a href="/new" class="btn btn-blue">Nuevo Torneo</a>
+            <a href="/new" class="btn btn-primary">Nuevo Torneo</a>
         {% endif %}
-        <a href="/my-tournaments" class="btn btn-green">Mis Torneos</a>
+        <a href="/my-tournaments" class="btn btn-secondary">Mis Torneos</a>
     </div>
 </body>
 </html>
