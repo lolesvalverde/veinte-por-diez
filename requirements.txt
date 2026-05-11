@@ -1,0 +1,12 @@
+# Interfaz de la Web App
+flask
+
+# Framework de pruebas (para Smart Tests en CloudBees)
+pytest
+
+# SDK de CloudBees para Feature Flags
+rox
+
+# Utilidades opcionales
+pandas
+python-dotenv
