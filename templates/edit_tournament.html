@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Editar Jugador - Veinte Por Diez</title>
+    <title>Editar Torneo - Veinte Por Diez</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/variables.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <style>
@@ -30,20 +30,15 @@
             color: #ff6b6b;
         }
         input[type="text"],
-        input[type="tel"],
-        input[type="number"],
-        select,
-        textarea {
+        input[type="date"],
+        input[type="file"],
+        select {
             width: 100%;
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
             font-size: 16px;
             box-sizing: border-box;
-        }
-        textarea {
-            resize: vertical;
-            min-height: 100px;
         }
         .button-group {
             display: flex;
@@ -94,10 +89,22 @@
             color: #c0c0c0;
             margin-top: 5px;
         }
+        .current-logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .current-logo img {
+            max-width: 150px;
+            max-height: 150px;
+            object-fit: contain;
+            border-radius: 8px;
+            background: white;
+            padding: 10px;
+        }
     </style>
 </head>
 <body>
-    <h1>Editar Jugador #{{ player.id }}</h1>
+    <h1>Editar Torneo</h1>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
@@ -112,59 +119,47 @@
         {% endif %}
     {% endwith %}
 
-    <form method="POST" action="/players/{{ player.id }}/edit">
+    <form method="POST" action="/tournaments/{{ tournament.id }}/edit" enctype="multipart/form-data">
         <div class="form-group">
-            <label for="first_name" class="required">Nombre</label>
-            <input type="text" id="first_name" name="first_name" value="{{ player.first_name }}" required title="Por favor completa este campo">
+            <label for="tournament_name" class="required">Nombre del Torneo</label>
+            <input type="text" id="tournament_name" name="tournament_name" value="{{ tournament.name }}" required title="Por favor completa este campo">
         </div>
 
         <div class="form-group">
-            <label for="last_name">Apellido</label>
-            <input type="text" id="last_name" name="last_name" value="{{ player.last_name or '' }}">
-        </div>
-
-        <div class="form-group">
-            <label for="position" class="required">Posición</label>
-            <select id="position" name="position" required title="Por favor selecciona una opción de la lista">
-                <option value="">Selecciona una posición</option>
-                <option value="drive" {% if player.position == 'drive' %}selected{% endif %}>Drive</option>
-                <option value="left" {% if player.position == 'left' %}selected{% endif %}>Revés</option>
+            <label for="mode" class="required">Modo</label>
+            <select id="mode" name="mode" required title="Por favor selecciona una opción de la lista">
+                <option value="">Selecciona un modo</option>
+                <option value="Por Parejas" {% if tournament.mode == 'Por Parejas' %}selected{% endif %}>Por Parejas</option>
+                <option value="Por equipos" {% if tournament.mode == 'Por equipos' %}selected{% endif %}>Por equipos</option>
             </select>
         </div>
 
         <div class="form-group">
-            <label for="level" class="required">Nivel</label>
-            <select id="level" name="level" required title="Por favor selecciona una opción de la lista">
-                <option value="">Selecciona un nivel</option>
-                {% for i in range(1, 7) %}
-                    <option value="{{ i }}" {% if player.level == i %}selected{% endif %}>{{ i }}</option>
-                {% endfor %}
-            </select>
-            <p class="helper-text">Escala del 1 (avanzado) al 6 (principiante)</p>
+            <label for="start_date" class="required">Fecha de Inicio</label>
+            <input type="date" id="start_date" name="start_date" value="{{ tournament.start_date.strftime('%Y-%m-%d') }}" required title="Por favor completa este campo">
         </div>
 
         <div class="form-group">
-            <label for="group" class="required">Grupo</label>
-            <select id="group" name="group" required title="Por favor selecciona una opción de la lista">
-                <option value="">Selecciona un grupo</option>
-                <option value="A" {% if player.group == 'A' %}selected{% endif %}>A</option>
-                <option value="B" {% if player.group == 'B' %}selected{% endif %}>B</option>
-            </select>
+            <label for="end_date" class="required">Fecha de Fin</label>
+            <input type="date" id="end_date" name="end_date" value="{{ tournament.end_date.strftime('%Y-%m-%d') }}" required title="Por favor completa este campo">
         </div>
 
         <div class="form-group">
-            <label for="phone" class="required">Teléfono</label>
-            <input type="tel" id="phone" name="phone" value="{{ player.phone }}" required title="Por favor completa este campo">
+            <label>Logo Actual</label>
+            <div class="current-logo">
+                <img src="{{ url_for('static', filename='uploads/' + tournament.logo_filename) }}" alt="{{ tournament.name }}">
+            </div>
         </div>
 
         <div class="form-group">
-            <label for="notes">Notas</label>
-            <textarea id="notes" name="notes" placeholder="Información adicional sobre el jugador...">{{ player.notes or '' }}</textarea>
+            <label for="logo">Cambiar Logo (opcional)</label>
+            <input type="file" id="logo" name="logo" accept="image/*">
+            <p class="helper-text">Solo sube un nuevo archivo si quieres cambiar el logo actual</p>
         </div>
 
         <div class="button-group">
             <button type="submit" class="btn btn-primary">Actualizar</button>
-            <a href="/players" class="btn btn-secondary">Cancelar</a>
+            <a href="/tournaments/{{ tournament.id }}" class="btn btn-secondary">Cancelar</a>
         </div>
     </form>
 

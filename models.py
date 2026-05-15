@@ -4,6 +4,12 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
+# Association table for many-to-many relationship between tournaments and players
+tournament_players = db.Table('tournament_players',
+    db.Column('tournament_id', db.String(36), db.ForeignKey('tournament.id'), primary_key=True),
+    db.Column('player_id', db.Integer, db.ForeignKey('player.id'), primary_key=True)
+)
+
 class Tournament(db.Model):
     id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     name = db.Column(db.String(200), nullable=False)
@@ -12,6 +18,9 @@ class Tournament(db.Model):
     start_date = db.Column(db.Date, nullable=False)
     end_date = db.Column(db.Date, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Relationship to players
+    players = db.relationship('Player', secondary=tournament_players, backref=db.backref('tournaments', lazy='dynamic'))
 
     def __repr__(self):
         return f'<Tournament {self.name}>'
