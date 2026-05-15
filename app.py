@@ -48,7 +48,9 @@ with app.app_context():
 
 # --- Register Blueprints ---
 from routes.tournament_routes import tournament_bp
+from routes.player_routes import player_bp
 app.register_blueprint(tournament_bp)
+app.register_blueprint(player_bp)
 
 # --- Route Definitions ---
 

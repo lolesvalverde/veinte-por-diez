@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Jugadores - Veinte Por Diez</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/variables.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        body {
+            padding: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 32px;
+            color: #f4d03f;
+            margin-bottom: 30px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .players-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .players-table th,
+        .players-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .players-table th {
+            background-color: var(--color-btn-primary, #0F766E);
+            color: white;
+            font-weight: bold;
+        }
+        .players-table tbody tr:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+        .btn-small {
+            padding: 8px 12px;
+            font-size: 18px;
+            border-radius: 4px;
+            min-width: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-icon {
+            text-decoration: none;
+            background: transparent !important;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        .btn-icon:hover {
+            background: transparent !important;
+            transform: scale(1.1);
+        }
+        .btn-icon svg {
+            width: 16px;
+            height: 16px;
+            fill: white;
+        }
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+        .flash {
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        .flash.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .flash.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Jugadores</h1>
+        <div>
+            <a href="/players/new" class="btn btn-primary">Nuevo Jugador</a>
+            <a href="/" class="btn btn-secondary">Volver al Inicio</a>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    {% if players %}
+        <table class="players-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Posición</th>
+                    <th>Nivel</th>
+                    <th>Grupo</th>
+                    <th>Teléfono</th>
+                    <th>Notas</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for player in players %}
+                <tr>
+                    <td>{{ player.id }}</td>
+                    <td>{{ player.first_name }}</td>
+                    <td>{{ player.last_name or '-' }}</td>
+                    <td>{% if player.position == 'drive' %}Drive{% elif player.position == 'left' %}Revés{% else %}{{ player.position }}{% endif %}</td>
+                    <td>{{ player.level }}</td>
+                    <td>{{ player.group }}</td>
+                    <td>{{ player.phone }}</td>
+                    <td>{{ player.notes or '-' }}</td>
+                    <td class="actions">
+                        <a href="/players/{{ player.id }}/edit" class="btn btn-small btn-secondary btn-icon" title="Editar">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                            </svg>
+                        </a>
+                        <form method="POST" action="/players/{{ player.id }}/delete" style="display: inline;" onsubmit="return confirm('¿Estás seguro de que quieres eliminar este jugador?');">
+                            <button type="submit" class="btn btn-small btn-danger btn-icon" title="Eliminar">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                    <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                                </svg>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No hay jugadores registrados todavía.</p>
+        <a href="/players/new" class="btn btn-primary">Registrar primer jugador</a>
+    {% endif %}
+</body>
+</html>

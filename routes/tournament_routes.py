@@ -39,7 +39,7 @@ def new():
             db.session.add(tournament)
             db.session.commit()
 
-            flash(f'Torneo "{tournament_name}" creado exitosamente!', 'success')
+            flash(f'Torneo "{tournament_name}" creado!', 'success')
             return redirect('/my-tournaments')
         else:
             flash('Por favor sube un logo', 'error')

@@ -63,6 +63,17 @@ h1 {
     box-shadow: var(--shadow-secondary);
 }
 
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+}
+
 .btn-small {
     padding: 10px 25px;
     font-size: 16px;
