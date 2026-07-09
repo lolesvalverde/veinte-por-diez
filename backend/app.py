@@ -8,11 +8,15 @@ from models import db
 # Load environment variables from the .env file
 load_dotenv()
 
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    template_folder='../frontend/templates',
+    static_folder='../frontend/static'
+)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-secret-key-change-in-production')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tournaments.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['UPLOAD_FOLDER'] = 'static/uploads'
+app.config['UPLOAD_FOLDER'] = os.path.join(app.static_folder, 'uploads')
 
 # Ensure upload folder exists
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
@@ -25,7 +29,7 @@ db.init_app(app)
 class Flags:
     def __init__(self):
         # Flag to control the visibility of the New Tournament Button
-        self.show_new_tournament_button = RoxFlag(False)
+        self.show_new_tournament_button = RoxFlag(True)
 
 # Initialize the flags container
 flags = Flags()
