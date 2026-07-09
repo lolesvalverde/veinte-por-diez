@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Jugador - Veinte Por Diez</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/variables.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        body {
+            padding: 40px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 32px;
+            color: #f4d03f;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: normal;
+            color: white;
+        }
+        .required::after {
+            content: " *";
+            color: #ff6b6b;
+        }
+        input[type="text"],
+        input[type="tel"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+        .flash {
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            position: relative;
+            padding-right: 40px;
+        }
+        .flash.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .flash.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .flash-close {
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: inherit;
+            opacity: 0.5;
+            padding: 0;
+            width: 20px;
+            height: 20px;
+            line-height: 1;
+        }
+        .flash-close:hover {
+            opacity: 1;
+        }
+        .helper-text {
+            font-size: 14px;
+            color: #c0c0c0;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Editar Jugador #{{ player.id }}</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">
+                        {{ message }}
+                        <button class="flash-close" onclick="this.parentElement.remove()">&times;</button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="/players/{{ player.id }}/edit">
+        <div class="form-group">
+            <label for="first_name" class="required">Nombre</label>
+            <input type="text" id="first_name" name="first_name" value="{{ player.first_name }}" required title="Por favor completa este campo">
+        </div>
+
+        <div class="form-group">
+            <label for="last_name">Apellido</label>
+            <input type="text" id="last_name" name="last_name" value="{{ player.last_name or '' }}">
+        </div>
+
+        <div class="form-group">
+            <label for="position" class="required">Posición</label>
+            <select id="position" name="position" required title="Por favor selecciona una opción de la lista">
+                <option value="">Selecciona una posición</option>
+                <option value="drive" {% if player.position == 'drive' %}selected{% endif %}>Drive</option>
+                <option value="left" {% if player.position == 'left' %}selected{% endif %}>Revés</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="level" class="required">Nivel</label>
+            <select id="level" name="level" required title="Por favor selecciona una opción de la lista">
+                <option value="">Selecciona un nivel</option>
+                {% for i in range(1, 7) %}
+                    <option value="{{ i }}" {% if player.level == i %}selected{% endif %}>{{ i }}</option>
+                {% endfor %}
+            </select>
+            <p class="helper-text">Escala del 1 (avanzado) al 6 (principiante)</p>
+        </div>
+
+        <div class="form-group">
+            <label for="group" class="required">Grupo</label>
+            <select id="group" name="group" required title="Por favor selecciona una opción de la lista">
+                <option value="">Selecciona un grupo</option>
+                <option value="A" {% if player.group == 'A' %}selected{% endif %}>A</option>
+                <option value="B" {% if player.group == 'B' %}selected{% endif %}>B</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="phone" class="required">Teléfono</label>
+            <input type="tel" id="phone" name="phone" value="{{ player.phone }}" required title="Por favor completa este campo">
+        </div>
+
+        <div class="form-group">
+            <label for="notes">Notas</label>
+            <textarea id="notes" name="notes" placeholder="Información adicional sobre el jugador...">{{ player.notes or '' }}</textarea>
+        </div>
+
+        <div class="button-group">
+            <button type="submit" class="btn btn-primary">Actualizar</button>
+            <a href="/players" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+
+    <script>
+        // Custom validation messages in Spanish
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            form.addEventListener('submit', function(e) {
+                const inputs = form.querySelectorAll('input[required], select[required]');
+                inputs.forEach(input => {
+                    if (!input.validity.valid) {
+                        if (input.validity.valueMissing) {
+                            if (input.tagName === 'SELECT') {
+                                input.setCustomValidity('Por favor selecciona una opción de la lista');
+                            } else {
+                                input.setCustomValidity('Por favor completa este campo');
+                            }
+                        }
+                    } else {
+                        input.setCustomValidity('');
+                    }
+                });
+            });
+
+            // Reset custom validity on input
+            const allInputs = form.querySelectorAll('input, select');
+            allInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    this.setCustomValidity('');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

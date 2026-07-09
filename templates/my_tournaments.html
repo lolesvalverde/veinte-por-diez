@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mis Torneos - Veinte Por Diez</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/variables.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        body {
+            padding: 40px 20px;
+        }
+        .header {
+            max-width: 900px;
+            margin: 0 auto 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 {
+            font-size: 32px;
+            color: #f4d03f;
+            margin-bottom: 10px;
+            margin: 0;
+        }
+        .tournament-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .tournament-card {
+            background: var(--bg-card);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            cursor: pointer;
+        }
+        .tournament-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        .tournament-actions {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            gap: 10px;
+        }
+        .btn-icon-dark {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            transition: transform 0.2s ease;
+        }
+        .btn-icon-dark:hover {
+            transform: scale(1.1);
+        }
+        .btn-icon-dark svg {
+            width: 18px;
+            height: 18px;
+            fill: #1F4D3A;
+        }
+        .tournament-logo {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            border-radius: 8px;
+            background-color: var(--color-input-bg);
+            padding: 5px;
+        }
+        .tournament-info {
+            flex: 1;
+        }
+        .tournament-name {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--color-verde-padel-oscuro);
+            margin: 0 0 10px 0;
+        }
+        .tournament-details {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--color-text-muted);
+            font-size: 14px;
+        }
+        .detail-label {
+            font-weight: 600;
+            color: var(--color-text-oscuro);
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--color-text-secundario);
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        .empty-state h2 {
+            color: var(--color-text-principal);
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Mis Torneos</h1>
+        <a href="/" class="btn btn-secondary btn-small">Volver</a>
+    </div>
+
+    <div class="container">
+        {% if tournaments %}
+        <div class="tournament-list">
+            {% for tournament in tournaments %}
+            <div class="tournament-card" onclick="window.location='/tournaments/{{ tournament.id }}'">
+                <div class="tournament-actions" onclick="event.stopPropagation()">
+                    <form method="POST" action="/tournaments/{{ tournament.id }}/delete" style="display: inline;" onsubmit="return confirm('¿Estás seguro de que quieres eliminar este torneo?');">
+                        <button type="submit" class="btn-icon-dark" title="Eliminar">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+                <img src="{{ url_for('static', filename='uploads/' + tournament.logo_filename) }}"
+                     alt="{{ tournament.name }}"
+                     class="tournament-logo">
+                <div class="tournament-info">
+                    <h2 class="tournament-name">{{ tournament.name }}</h2>
+                    <div class="tournament-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Modo:</span>
+                            <span>{{ tournament.mode }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Fechas:</span>
+                            <span>{{ tournament.start_date.strftime('%d/%m/%Y') }} - {{ tournament.end_date.strftime('%d/%m/%Y') }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <h2>No hay torneos todavía</h2>
+            <p>Crea tu primer torneo para comenzar</p>
+            <a href="/new" class="btn btn-primary mt-2">Crear Torneo</a>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

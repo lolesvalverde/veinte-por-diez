@@ -1,0 +1,15 @@
+# UI
+flask
+flask_sqlalchemy
+
+# Database
+
+# Testing Framework
+pytest
+
+# SDK by CloudBees for Feature Flags
+rox
+
+# Other
+pandas
+python-dotenv

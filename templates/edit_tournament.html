@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Torneo - Veinte Por Diez</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/variables.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        body {
+            padding: 40px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 32px;
+            color: #f4d03f;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: normal;
+            color: white;
+        }
+        .required::after {
+            content: " *";
+            color: #ff6b6b;
+        }
+        input[type="text"],
+        input[type="date"],
+        input[type="file"],
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+        .flash {
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            position: relative;
+            padding-right: 40px;
+        }
+        .flash.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .flash.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .flash-close {
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: inherit;
+            opacity: 0.5;
+            padding: 0;
+            width: 20px;
+            height: 20px;
+            line-height: 1;
+        }
+        .flash-close:hover {
+            opacity: 1;
+        }
+        .helper-text {
+            font-size: 14px;
+            color: #c0c0c0;
+            margin-top: 5px;
+        }
+        .current-logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .current-logo img {
+            max-width: 150px;
+            max-height: 150px;
+            object-fit: contain;
+            border-radius: 8px;
+            background: white;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Editar Torneo</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">
+                        {{ message }}
+                        <button class="flash-close" onclick="this.parentElement.remove()">&times;</button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="/tournaments/{{ tournament.id }}/edit" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="tournament_name" class="required">Nombre del Torneo</label>
+            <input type="text" id="tournament_name" name="tournament_name" value="{{ tournament.name }}" required title="Por favor completa este campo">
+        </div>
+
+        <div class="form-group">
+            <label for="mode" class="required">Modo</label>
+            <select id="mode" name="mode" required title="Por favor selecciona una opción de la lista">
+                <option value="">Selecciona un modo</option>
+                <option value="Por Parejas" {% if tournament.mode == 'Por Parejas' %}selected{% endif %}>Por Parejas</option>
+                <option value="Por equipos" {% if tournament.mode == 'Por equipos' %}selected{% endif %}>Por equipos</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="start_date" class="required">Fecha de Inicio</label>
+            <input type="date" id="start_date" name="start_date" value="{{ tournament.start_date.strftime('%Y-%m-%d') }}" required title="Por favor completa este campo">
+        </div>
+
+        <div class="form-group">
+            <label for="end_date" class="required">Fecha de Fin</label>
+            <input type="date" id="end_date" name="end_date" value="{{ tournament.end_date.strftime('%Y-%m-%d') }}" required title="Por favor completa este campo">
+        </div>
+
+        <div class="form-group">
+            <label>Logo Actual</label>
+            <div class="current-logo">
+                <img src="{{ url_for('static', filename='uploads/' + tournament.logo_filename) }}" alt="{{ tournament.name }}">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="logo">Cambiar Logo (opcional)</label>
+            <input type="file" id="logo" name="logo" accept="image/*">
+            <p class="helper-text">Solo sube un nuevo archivo si quieres cambiar el logo actual</p>
+        </div>
+
+        <div class="button-group">
+            <button type="submit" class="btn btn-primary">Actualizar</button>
+            <a href="/tournaments/{{ tournament.id }}" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+
+    <script>
+        // Custom validation messages in Spanish
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            form.addEventListener('submit', function(e) {
+                const inputs = form.querySelectorAll('input[required], select[required]');
+                inputs.forEach(input => {
+                    if (!input.validity.valid) {
+                        if (input.validity.valueMissing) {
+                            if (input.tagName === 'SELECT') {
+                                input.setCustomValidity('Por favor selecciona una opción de la lista');
+                            } else {
+                                input.setCustomValidity('Por favor completa este campo');
+                            }
+                        }
+                    } else {
+                        input.setCustomValidity('');
+                    }
+                });
+            });
+
+            // Reset custom validity on input
+            const allInputs = form.querySelectorAll('input, select');
+            allInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    this.setCustomValidity('');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
