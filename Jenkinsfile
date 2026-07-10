@@ -20,13 +20,6 @@ spec:
       env:
         - name: DOCKER_HOST
           value: tcp://localhost:2375
-    - name: dind
-      image: docker:dind
-      securityContext:
-        privileged: true
-      env:
-        - name: DOCKER_TLS_CERTDIR
-          value: ""
 '''
         }
     }
@@ -74,8 +67,7 @@ spec:
             }
             steps {
                 container('docker') {
-                    echo 'Building backend Docker image using DinD sidecar...'
-                    // Build context is root of the repository to allow backend/Dockerfile to access frontend/
+                    echo 'Building backend Docker image...'
                     sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} -t ${IMAGE_NAME}:latest -f backend/Dockerfile .'
                 }
             }
@@ -104,7 +96,7 @@ spec:
                         sh 'echo "${DOCKER_PASS}" | docker login -u "${DOCKER_USER}" --password-stdin'
                         sh 'docker push ${DOCKER_USER}/${IMAGE_NAME}:${IMAGE_TAG}'
                     }
-            }
+                }
             }
         }
 
@@ -117,12 +109,19 @@ spec:
                 }
             }
             steps {
-                echo 'Registering build artifact in CloudBees Unify...'
-                registerBuildArtifactMetadata(
-                    name: 'veinte-por-diez-backend',
-                    version: "${IMAGE_TAG}",
-                    url: 'https://hub.docker.com/repository/docker/lvalverderodriguez/${IMAGE_NAME}'
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'docket-pat', 
+                        usernameVariable: 'DOCKER_USER'     
                 )
+                ]) {
+                    echo 'Registering build artifact in CloudBees Unify...'
+                    registerBuildArtifactMetadata(
+                        name: 'veinte-por-diez-backend',
+                        version: "${IMAGE_TAG}",
+                        url: 'https://hub.docker.com/repository/docker/${DOCKER_USER}/${IMAGE_NAME}'
+                    )
+                }
             }
         }
     }
