@@ -90,11 +90,20 @@ spec:
                 }
             }
             steps {
-                container('docker') {
-                    echo 'Inspecting built container image...'
-                    sh 'docker inspect ${IMAGE_NAME}:${IMAGE_TAG}'
-                    sh 'docker push lvalverderodriguez/${IMAGE_NAME}:${IMAGE_TAG}'
-                }
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'docket-pat', 
+                        usernameVariable: 'DOCKER_USER',     
+                        passwordVariable: 'DOCKER_PASS'       
+                )
+                ]) {
+                    container('docker') {
+                        echo 'Inspecting built container image...'
+                        sh 'docker inspect ${IMAGE_NAME}:${IMAGE_TAG}'
+                        sh 'echo "${DOCKER_PASS}" | docker login -u "${DOCKER_USER}" --password-stdin'
+                        sh 'docker push ${DOCKER_USER}/${IMAGE_NAME}:${IMAGE_TAG}'
+                    }
+            }
             }
         }
 
