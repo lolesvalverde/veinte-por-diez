@@ -93,7 +93,7 @@ spec:
                 container('docker') {
                     echo 'Inspecting built container image...'
                     sh 'docker inspect ${IMAGE_NAME}:${IMAGE_TAG}'
-                    sh 'docker docker push lvalverderodriguez/${IMAGE_NAME}:${IMAGE_TAG}'
+                    sh 'docker push lvalverderodriguez/${IMAGE_NAME}:${IMAGE_TAG}'
                 }
             }
         }
