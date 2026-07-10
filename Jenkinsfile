@@ -96,6 +96,23 @@ spec:
                 }
             }
         }
+
+        stage('Register Artifact in CloudBees Unify') {
+            when {
+                anyOf {
+                    changeset "backend/**"
+                    changeset "Jenkinsfile"
+                    branch "main"
+                }
+            }
+            steps {
+                echo 'Registering build artifact in CloudBees Unify...'
+                registerBuildArtifactMetadata(
+                    name: 'veinte-por-diez-backend',
+                    version: "${IMAGE_TAG}"
+                )
+            }
+        }
     }
 
     post {
