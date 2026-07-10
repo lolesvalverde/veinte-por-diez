@@ -39,3 +39,14 @@ jobs:
         run: |
           docker images
           docker inspect veinte-por-diez-frontend:latest
+
+      - name: Register build artifact in CloudBees Unify
+        uses: cloudbees-io-gha/register-build-artifact@v3
+        with:
+          name: veinte-por-diez-frontend
+          version: ${{ github.sha }}
+          url: https://github.com/${{ github.repository }}/pkgs/container/veinte-por-diez-frontend
+          type: Docker
+          commit: ${{ github.sha }}
+          ref: ${{ github.ref }}
+          repository-url: https://github.com/${{ github.repository }}
