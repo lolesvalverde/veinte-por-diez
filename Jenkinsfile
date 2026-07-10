@@ -121,7 +121,6 @@ spec:
                 registerBuildArtifactMetadata(
                     name: 'veinte-por-diez-backend',
                     version: "${IMAGE_TAG}",
-                    // Required parameter pointing to where the built artifact resides
                     url: 'https://hub.docker.com/repository/docker/lvalverderodriguez/${IMAGE_NAME}'
                 )
             }
