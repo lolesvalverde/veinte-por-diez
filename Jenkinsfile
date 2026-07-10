@@ -126,7 +126,7 @@ spec:
                     registerBuildArtifactMetadata(
                         name: 'veinte-por-diez-backend',
                         version: "${IMAGE_TAG}",
-                        url: 'https://hub.docker.com/repository/docker/${DOCKER_USER}/${IMAGE_NAME}'
+                        url: "https://hub.docker.com/repository/docker/${DOCKER_USER}/${IMAGE_NAME}"
                     )
                 }
             }
