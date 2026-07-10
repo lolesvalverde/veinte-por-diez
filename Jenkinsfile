@@ -1,5 +1,35 @@
 pipeline {
-    agent any
+    agent {
+        kubernetes {
+            yaml '''
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: jenkins-agent
+spec:
+  containers:
+    - name: python
+      image: python:3.11-slim
+      command: ['cat']
+      tty: true
+    - name: docker
+      image: docker:latest
+      command: ['cat']
+      tty: true
+      env:
+        - name: DOCKER_HOST
+          value: tcp://localhost:2375
+    - name: dind
+      image: docker:dind
+      securityContext:
+        privileged: true
+      env:
+        - name: DOCKER_TLS_CERTDIR
+          value: ""
+'''
+        }
+    }
 
     environment {
         IMAGE_NAME = 'veinte-por-diez-backend'
@@ -22,13 +52,15 @@ pipeline {
                 }
             }
             steps {
-                echo 'Setting up Python virtual environment and running tests...'
-                sh '''
-                    python3 -m venv backend/.venv
-                    backend/.venv/bin/pip install -r backend/requirements.txt
-                    # Run backend tests
-                    backend/.venv/bin/pytest backend/
-                '''
+                container('python') {
+                    echo 'Setting up Python virtual environment and running tests...'
+                    sh '''
+                        python3 -m venv backend/.venv
+                        backend/.venv/bin/pip install -r backend/requirements.txt
+                        # Run backend tests
+                        backend/.venv/bin/pytest backend/
+                    '''
+                }
             }
         }
 
@@ -41,9 +73,11 @@ pipeline {
                 }
             }
             steps {
-                echo 'Building backend Docker image...'
-                // Build context is root of the repository to allow backend/Dockerfile to access frontend/
-                sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} -t ${IMAGE_NAME}:latest -f backend/Dockerfile .'
+                container('docker') {
+                    echo 'Building backend Docker image using DinD sidecar...'
+                    // Build context is root of the repository to allow backend/Dockerfile to access frontend/
+                    sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} -t ${IMAGE_NAME}:latest -f backend/Dockerfile .'
+                }
             }
         }
 
@@ -56,13 +90,18 @@ pipeline {
                 }
             }
             steps {
-                echo 'Inspecting built container image...'
-                sh 'docker inspect ${IMAGE_NAME}:${IMAGE_TAG}'
+                container('docker') {
+                    echo 'Inspecting built container image...'
+                    sh 'docker inspect ${IMAGE_NAME}:${IMAGE_TAG}'
+                }
             }
         }
     }
 
     post {
+        always {
+            cleanWs()
+        }
         success {
             echo 'Pipeline completed successfully!'
         }
