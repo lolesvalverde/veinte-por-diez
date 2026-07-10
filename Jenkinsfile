@@ -119,7 +119,8 @@ spec:
                 withCredentials([
                     usernamePassword(
                         credentialsId: 'docket-pat', 
-                        usernameVariable: 'DOCKER_USER'     
+                        usernameVariable: 'DOCKER_USER',     
+                        passwordVariable: 'DOCKER_PASS'       
                 )
                 ]) {
                     echo 'Registering build artifact in CloudBees Unify...'
