@@ -93,6 +93,7 @@ spec:
                 container('docker') {
                     echo 'Inspecting built container image...'
                     sh 'docker inspect ${IMAGE_NAME}:${IMAGE_TAG}'
+                    sh 'docker docker push lvalverderodriguez/${IMAGE_NAME}:${IMAGE_TAG}'
                 }
             }
         }
@@ -109,7 +110,9 @@ spec:
                 echo 'Registering build artifact in CloudBees Unify...'
                 registerBuildArtifactMetadata(
                     name: 'veinte-por-diez-backend',
-                    version: "${IMAGE_TAG}"
+                    version: "${IMAGE_TAG}",
+                    // Required parameter pointing to where the built artifact resides
+                    url: 'https://hub.docker.com/repository/docker/lvalverderodriguez/${IMAGE_NAME}'
                 )
             }
         }
