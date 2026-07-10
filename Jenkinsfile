@@ -100,6 +100,7 @@ spec:
                     container('docker') {
                         echo 'Inspecting built container image...'
                         sh 'docker inspect ${IMAGE_NAME}:${IMAGE_TAG}'
+                        sh 'docker tag veinte-por-diez-backend ${DOCKER_USER}/${IMAGE_NAME}:${IMAGE_TAG}'
                         sh 'echo "${DOCKER_PASS}" | docker login -u "${DOCKER_USER}" --password-stdin'
                         sh 'docker push ${DOCKER_USER}/${IMAGE_NAME}:${IMAGE_TAG}'
                     }
