@@ -17,6 +17,11 @@ jobs:
     name: Build & Lint Frontend
     runs-on: ubuntu-latest
 
+    # Required permissions for OIDC token authentication with CloudBees Unify
+    permissions:
+      id-token: write
+      contents: read
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
